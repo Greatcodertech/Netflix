@@ -1,8 +1,15 @@
-FROM ubuntu     
-RUN apt-get update -y 
-RUN apt-get install apache2 -y 
-RUN sed -i 's/80/4000/' /etc/apache2/ports.conf
-COPY . /var/www/html/ 
-EXPOSE 4000  
-CMD ["/usr/sbin/apachectl", "-D", "FOREGROUND"] 
-    
+# Use official Tomcat image
+FROM tomcat:9-jdk11
+LABEL maintainer="bhupesh@thegreatcoder.com"
+
+# Clean default apps
+RUN rm -rf /usr/local/tomcat/webapps/*
+
+# Copy WAR file from Maven target folder
+COPY target/*.war /usr/local/tomcat/webapps/ROOT.war
+
+# Expose port 8080
+EXPOSE 8080
+
+# Start Tomcat
+CMD ["catalina.sh", "run"]
